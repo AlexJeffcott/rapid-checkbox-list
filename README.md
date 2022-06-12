@@ -1,2 +1,3 @@
-# rapid-checkbox-list
+# checkbox-list
+
 Created with CodeSandbox
