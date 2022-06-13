@@ -1,7 +1,8 @@
-import { useState, useEffect, FC, memo } from "react";
+import { useState, useEffect, FC, memo, ChangeEvent } from "react";
 import { Checkbox, Card, CardTitle, CardBody } from "./";
 import type { Item, ListProps } from "../types";
 import styled from "@emotion/styled";
+import {useListReducer} from './ListState'
 
 const ListHeader = styled.div(({ theme }) => ({
   fontFamily: theme.other.fontFamily.lato,
@@ -14,46 +15,47 @@ const ListHeader = styled.div(({ theme }) => ({
   left: "38px"
 }));
 
-export const List: FC<ListProps> = memo(
-  ({ getList, handleFormChange }) => {
-    const [apiState, setApiState] = useState<"loading" | "success" | "failure">(
-      "loading"
-    );
-    const [items, setItems] = useState<Item[]>([]);
+export const List: FC<ListProps> = ({ getList }) => {
+  const [apiState, setApiState] = useState<"loading" | "success" | "failure">(
+    "loading"
+  );
+  const [{ items }, { addItems, updateItemStatus }] = useListReducer();
 
-    useEffect(() => {
-      getList()
-        .then((data) => {
-          setTimeout(() => {
-            setItems(data);
-            setApiState("success");
-          }, 500);
-        })
-        .catch((error: Error) => {
-          setApiState("failure");
-          console.error(error);
-        });
-    }, [getList]);
+  useEffect(() => {
+    getList()
+      .then((data) => {
+        setTimeout(() => {
+          addItems(data);
+          setApiState("success");
+        }, 500);
+      })
+      .catch((error: Error) => {
+        setApiState("failure");
+        console.error(error);
+      });
+  }, [getList]);
 
-    return (
-      <Card>
-        <CardTitle>Super Special Checkbox list</CardTitle>
-        <CardBody>
-          {apiState === "loading" ? <div>loading...</div> : <></>}
-          {apiState === "failure" ? <div>Something went wrong!</div> : <></>}
-          {apiState === "success" ? (
-            <form onChange={handleFormChange}>
-              <ListHeader>Info</ListHeader>
-              {items.map((item, i) => (
-                <Checkbox key={i} name={i.toString()} item={item}></Checkbox>
-              ))}
-            </form>
-          ) : (
-            <></>
-          )}
-        </CardBody>
-      </Card>
-    );
-  },
-  (p, n) => true
-);
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    updateItemStatus(event.currentTarget.id as `${number}`, event.currentTarget.checked)
+  }
+
+  return (
+    <Card>
+      <CardTitle>Super Special Checkbox list</CardTitle>
+      <CardBody>
+        {apiState === "loading" ? <div>loading...</div> : <></>}
+        {apiState === "failure" ? <div>Something went wrong!</div> : <></>}
+        {apiState === "success" ? (
+          <>
+            <ListHeader>Info</ListHeader>
+            {items.map((item, i) => (
+              <Checkbox key={i} item={item} handleCheckboxChange={handleCheckboxChange}></Checkbox>
+            ))}
+          </>
+        ) : (
+          <></>
+        )}
+      </CardBody>
+    </Card>
+  );
+};
