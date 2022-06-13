@@ -1,6 +1,6 @@
 # Rapid Checkbox List
 
-This site was created using Creat-React-App so you can start it with:
+This site was created using Create-React-App so you can start it with:
 
 ```shell
 npm i
