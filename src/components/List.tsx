@@ -36,7 +36,7 @@ export const List: FC<ListProps> = ({ getList }) => {
   }, [getList]);
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateItemStatus(event.currentTarget.id as `${number}`, event.currentTarget.checked)
+    updateItemStatus(event.currentTarget.name as `${number}`, event.currentTarget.checked)
   }
 
   return (

@@ -68,7 +68,7 @@ const StyledCheckbox = styled.div(({ theme }) => ({
 export const Checkbox: FC<CheckboxProps> = memo(({ item, handleCheckboxChange }) => (
   <Label>
     <Input
-      id={item.id}
+      name={item.id}
       checked={item.status}
       aria-checked={item.status}
       type="checkbox"
