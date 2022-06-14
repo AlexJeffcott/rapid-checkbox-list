@@ -3,33 +3,28 @@ import { Layout, List } from "../components";
 import { H2 } from "../components";
 import { fetchItemsA, fetchItemsB } from "../api";
 import type { Item, MockA, MockB } from "../types";
+import {useListReducer} from '../components/ListState'
 
 const getNormalisedMockListA = async () =>
   fetchItemsA().then((data: MockA[]): Item[] =>
-    data.map((d) => ([d.title]))
+    data.map((d, i) => ({id: `${i}`, status: false, infos: [d.title]}))
   );
 
 const getNormalisedMockListB = async () =>
   fetchItemsB().then((data: MockB[]): Item[] =>
-    data.map((d) => ([d.name, d.description, d.link]))
+    data.map((d, i) => ({id: `${i}`, status: false, infos: [d.name, d.description, d.link]}))
   );
 
 export const DashboardPage = () => {
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
-
-  const handleFormChange = (event: ChangeEvent<HTMLFormElement>) => {
-    const inputElements = Array.from(event.target.form) as HTMLInputElement[]
-    const checkedInputs = inputElements.map((input: HTMLInputElement) => input.checked ? input.name : '').filter(Boolean)
-    setCheckedItems(checkedInputs)
-  }
+  const [{ items }] = useListReducer();
 
   return (
     <Layout>
       <H2>
         Selected indexes:{" "}
-        {checkedItems.join(", ") || "none"}
+        {items.map((item: Item) => item.status ? item.id : '').filter(Boolean).join(", ") || "none"}
       </H2>
-      <List getList={getNormalisedMockListB} handleFormChange={handleFormChange}></List>
+      <List getList={getNormalisedMockListB}></List>
     </Layout>
   );
 }

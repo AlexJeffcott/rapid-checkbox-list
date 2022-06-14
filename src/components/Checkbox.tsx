@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import styled from "@emotion/styled";
 import type { CheckboxProps } from "../types";
 
@@ -65,12 +65,15 @@ const StyledCheckbox = styled.div(({ theme }) => ({
   }
 }));
 
-export const Checkbox: FC<CheckboxProps> = ({ item, name }) => (
+export const Checkbox: FC<CheckboxProps> = memo(({ item, handleCheckboxChange }) => (
   <Label>
     <Input
+      name={item.id}
+      checked={item.status}
+      aria-checked={item.status}
       type="checkbox"
       role="checkbox"
-      name={name}
+      onChange={handleCheckboxChange}
     />
     <StyledCheckbox>
       <svg viewBox="0 0 24 24">
@@ -78,11 +81,11 @@ export const Checkbox: FC<CheckboxProps> = ({ item, name }) => (
       </svg>
     </StyledCheckbox>
     <InfoContainer>
-      {item.map((Info, i) =>
+      {item.infos.map((Info, i) =>
         !!Info ? (
           <div key={i}>{typeof Info !== "string" ? <Info /> : Info}</div>
         ) : null
       )}
     </InfoContainer>
   </Label>
-)
+), (p, n) => p.item.status === n.item.status)
